@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 public class UserRepository {
 
     public MealtrackerUser getUserWithUsername(String username) throws UsernameDoesNotExistException {
-        return new MealtrackerUser("", "", "");
+        return new MealtrackerUser(0, "", "", "", null);
     }
 
 }

@@ -10,6 +10,7 @@ import com.calorie.mealtracker.model.request.LoginRequestBody;
 import com.calorie.mealtracker.model.response.LoginResponseBody;
 import com.calorie.mealtracker.service.AuthenticationService;
 import com.calorie.mealtracker.service.AuthenticationServiceUnitTests;
+import com.calorie.mealtracker.service.JwtUtilService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.calorie.mealtracker.service.AuthenticationServiceUnitTests.*;
 import static com.calorie.mealtracker.utils.JSONConverter.asJsonString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -79,7 +81,7 @@ public class LoginUnitTests {
     @Test
     public void whenPasswordIsEmpty_errorShouldSaySo() throws Exception {
 
-        LoginRequestBody requestBodyWithEmptyPassword = new LoginRequestBody(AuthenticationServiceUnitTests.USERNAME, "");
+        LoginRequestBody requestBodyWithEmptyPassword = new LoginRequestBody(USERNAME, "");
 
         mockMvc.perform(
                 post(ENDPOINT)
@@ -98,7 +100,7 @@ public class LoginUnitTests {
     @Test
     public void whenPasswordIsNull_errorShouldSaySo() throws Exception {
 
-        LoginRequestBody requestBodyWithNullPassword = new LoginRequestBody(AuthenticationServiceUnitTests.USERNAME, null);
+        LoginRequestBody requestBodyWithNullPassword = new LoginRequestBody(USERNAME, null);
 
         mockMvc.perform(
                 post(ENDPOINT)
@@ -117,7 +119,7 @@ public class LoginUnitTests {
     @Test
     public void whenUsernameDoesNotExist_errorShouldBe404() throws Exception {
 
-        LoginRequestBody requestBody = new LoginRequestBody(AuthenticationServiceUnitTests.USERNAME, AuthenticationServiceUnitTests.PASSWORD_CORRECT);
+        LoginRequestBody requestBody = new LoginRequestBody(USERNAME, PASSWORD_CORRECT);
         when(authenticationService.login(requestBody.getUsername(), requestBody.getPassword())).thenThrow(UsernameDoesNotExistException.class);
 
         mockMvc.perform(
@@ -137,9 +139,9 @@ public class LoginUnitTests {
     @Test
     public void whenUsernameCorrectAndPasswordIsIncorrect_errorShouldBe404() throws Exception {
 
-        LoginRequestBody requestBody = new LoginRequestBody(AuthenticationServiceUnitTests.USERNAME, AuthenticationServiceUnitTests.PASSWORD_INCORRECT);
+        LoginRequestBody requestBody = new LoginRequestBody(USERNAME, PASSWORD_INCORRECT);
 
-        MealtrackerUser user = new MealtrackerUser(AuthenticationServiceUnitTests.USERNAME, AuthenticationServiceUnitTests.PASSWORD_CORRECT, AuthenticationServiceUnitTests.FULL_NAME);
+        MealtrackerUser user = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
 
         when(authenticationService.login(requestBody.getUsername(), requestBody.getPassword())).thenThrow(IncorrectPasswordException.class);
 
@@ -160,8 +162,8 @@ public class LoginUnitTests {
     @Test
     public void whenUsernameAndPasswordAreCorrect_UserInformationShouldBeReturned() throws Exception {
 
-        LoginRequestBody requestBody = new LoginRequestBody(AuthenticationServiceUnitTests.USERNAME, AuthenticationServiceUnitTests.PASSWORD_CORRECT);
-        MealtrackerUser user = new MealtrackerUser(AuthenticationServiceUnitTests.USERNAME, AuthenticationServiceUnitTests.PASSWORD_CORRECT, AuthenticationServiceUnitTests.FULL_NAME);
+        LoginRequestBody requestBody = new LoginRequestBody(USERNAME, PASSWORD_CORRECT);
+        MealtrackerUser user = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
 
         when(authenticationService.login(requestBody.getUsername(), requestBody.getPassword())).thenReturn(new LoginResponseBody(user));
 
@@ -174,6 +176,7 @@ public class LoginUnitTests {
                 .andExpect(status().is(HttpStatus.OK.value()))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value(LoginResponseBody.MESSAGE))
+                .andExpect(jsonPath("$.user.token").value(""))
                 .andExpect(jsonPath("$.user.fullName").value(user.getFullName()))
                 .andExpect(jsonPath("$.user.username").value(user.getUsername()));
 

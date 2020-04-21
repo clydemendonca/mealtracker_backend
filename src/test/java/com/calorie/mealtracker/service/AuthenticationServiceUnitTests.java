@@ -5,7 +5,6 @@ import com.calorie.mealtracker.error.UsernameDoesNotExistException;
 import com.calorie.mealtracker.model.MealtrackerUser;
 import com.calorie.mealtracker.model.response.LoginResponseBody;
 import com.calorie.mealtracker.repository.UserRepository;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +21,8 @@ public class AuthenticationServiceUnitTests {
     public static final String PASSWORD_CORRECT = "something";
     public static final String PASSWORD_INCORRECT = "somethingElse";
     public static final String FULL_NAME = "John Doe";
+    public static final long ID = 100;
+    public static final MealtrackerUser.Role ROLE = MealtrackerUser.Role.USER;
 
     private AuthenticationService authenticationService;
 
@@ -46,7 +47,7 @@ public class AuthenticationServiceUnitTests {
     @Test(expected = IncorrectPasswordException.class)
     public void whenUsernameCorrectAndPasswordIsIncorrect_throwAnException() throws UsernameDoesNotExistException, IncorrectPasswordException {
 
-        MealtrackerUser user = new MealtrackerUser(USERNAME, PASSWORD_CORRECT, FULL_NAME);
+        MealtrackerUser user = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
         when(repository.getUserWithUsername(USERNAME)).thenReturn(user);
 
         authenticationService.login(USERNAME, PASSWORD_INCORRECT);
@@ -58,7 +59,8 @@ public class AuthenticationServiceUnitTests {
     @Test
     public void whenUsernameAndPasswordAreCorrect_returnLoginResponseBody() throws UsernameDoesNotExistException, IncorrectPasswordException {
 
-        MealtrackerUser expectedUser = new MealtrackerUser(USERNAME, PASSWORD_CORRECT, FULL_NAME);
+        MealtrackerUser expectedUser = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
+
         when(repository.getUserWithUsername(USERNAME)).thenReturn(expectedUser);
 
         LoginResponseBody actualLoginResponseBody = authenticationService.login(USERNAME, PASSWORD_CORRECT);

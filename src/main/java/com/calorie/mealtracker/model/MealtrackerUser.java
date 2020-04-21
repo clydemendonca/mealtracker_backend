@@ -2,14 +2,34 @@ package com.calorie.mealtracker.model;
 
 public class MealtrackerUser {
 
+    private long id;
     private String username;
     private String encryptedPassword;
     private String fullName;
+    private Role role;
 
-    public MealtrackerUser(String username, String encryptedPassword, String fullName) {
+    public MealtrackerUser(long id, String username, String encryptedPassword, String fullName, Role role) {
+        this.id = id;
         this.username = username;
         this.encryptedPassword = encryptedPassword;
         this.fullName = fullName;
+        this.role = role;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role mealtrackerUserRole) {
+        this.role = mealtrackerUserRole;
     }
 
     public String getUsername() {
@@ -35,5 +55,10 @@ public class MealtrackerUser {
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
+
+    public enum Role {
+        ADMIN, USER
+    }
+
 
 }
