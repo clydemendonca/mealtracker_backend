@@ -29,6 +29,9 @@ public class AuthenticationServiceUnitTests {
     @Mock
     private UserRepository repository;
 
+    @Mock
+    private JwtUtilService jwtUtilService;
+
     @Before
     public void setup() {
         authenticationService = new AuthenticationService();
@@ -56,12 +59,14 @@ public class AuthenticationServiceUnitTests {
 
     }
 
+
     @Test
     public void whenUsernameAndPasswordAreCorrect_returnLoginResponseBody() throws UsernameDoesNotExistException, IncorrectPasswordException {
 
         MealtrackerUser expectedUser = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
 
         when(repository.getUserWithUsername(USERNAME)).thenReturn(expectedUser);
+        when(jwtUtilService.generateToken(mock(MealtrackerUser.class))).thenReturn("some_jwt");
 
         LoginResponseBody actualLoginResponseBody = authenticationService.login(USERNAME, PASSWORD_CORRECT);
         LoginResponseBody.MealtrackerUserToReturn actualUser = actualLoginResponseBody.getUser();

@@ -38,7 +38,7 @@ public class JwtUtilServiceUnitTests {
         Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwtToken).getBody();
 
         Assertions.assertEquals(claims.get(KEY_USERNAME), user.getUsername());
-        Assertions.assertEquals(claims.get(KEY_USER_ID), user.getId());
+        Assertions.assertEquals((long) claims.get(KEY_USER_ID), user.getId());
         Assertions.assertEquals(claims.get(KEY_ROLE), user.getRole());
 
     }

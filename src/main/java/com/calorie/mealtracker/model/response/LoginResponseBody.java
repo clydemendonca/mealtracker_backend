@@ -15,6 +15,10 @@ public class LoginResponseBody extends StandardResponseBody {
         this.user = new MealtrackerUserToReturn(user);
     }
 
+    public void setToken(String token) {
+        user.setToken(token);
+    }
+
     public MealtrackerUserToReturn getUser() {
         return user;
     }
@@ -25,9 +29,6 @@ public class LoginResponseBody extends StandardResponseBody {
 
     public class MealtrackerUserToReturn {
 
-        @Autowired
-        private JwtUtilService jwtUtilService;
-
         private String username;
         private String fullName;
         private String token;
@@ -35,7 +36,7 @@ public class LoginResponseBody extends StandardResponseBody {
         public MealtrackerUserToReturn(MealtrackerUser user) {
             this.username = user.getUsername();
             this.fullName = user.getFullName();
-            this.token = jwtUtilService.generateToken(user);
+            this.token = token;
         }
 
         public String getFullName() {

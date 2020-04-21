@@ -21,12 +21,17 @@ public class AuthenticationService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private JwtUtilService jwtUtilService;
+
     public LoginResponseBody login(String username, String password) throws UsernameDoesNotExistException, IncorrectPasswordException {
         MealtrackerUser user = userRepository.getUserWithUsername(username);
         if (!password.equals(user.getEncryptedPassword())) {
             throw new IncorrectPasswordException();
         }
-        return new LoginResponseBody(user);
+        LoginResponseBody loginResponseBody = new LoginResponseBody(user);
+        loginResponseBody.setToken(jwtUtilService.generateToken(user));
+        return loginResponseBody;
     }
 
     public void setUserRepository(UserRepository userRepository) {
