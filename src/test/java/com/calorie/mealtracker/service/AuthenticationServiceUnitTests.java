@@ -5,12 +5,16 @@ import com.calorie.mealtracker.error.UsernameDoesNotExistException;
 import com.calorie.mealtracker.model.MealtrackerUser;
 import com.calorie.mealtracker.model.response.LoginResponseBody;
 import com.calorie.mealtracker.repository.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static com.calorie.mealtracker.service.JwtUtilService.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -23,6 +27,7 @@ public class AuthenticationServiceUnitTests {
     public static final String FULL_NAME = "John Doe";
     public static final long ID = 100;
     public static final MealtrackerUser.Role ROLE = MealtrackerUser.Role.USER;
+    private static final String CORRECT_JWT_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoxLCJpZCI6MTAwLCJ1c2VybmFtZSI6InNvbWV0aGluZyIsInN1YiI6InNvbWV0aGluZyIsImlhdCI6MTU4NzU0ODc5MSwiZXhwIjoxNTg3NTg0NzkxfQ.BzXHDJz5mOvQw77YIdl3wMt8ECkofEaX9dxzUZ79HOY";
 
     private AuthenticationService authenticationService;
 
@@ -36,6 +41,7 @@ public class AuthenticationServiceUnitTests {
     public void setup() {
         authenticationService = new AuthenticationService();
         authenticationService.setUserRepository(repository);
+        authenticationService.setJwtUtilService(jwtUtilService);
     }
 
     @Test(expected = UsernameDoesNotExistException.class)
@@ -66,15 +72,21 @@ public class AuthenticationServiceUnitTests {
         MealtrackerUser expectedUser = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
 
         when(repository.getUserWithUsername(USERNAME)).thenReturn(expectedUser);
-        when(jwtUtilService.generateToken(mock(MealtrackerUser.class))).thenReturn("some_jwt");
+        when(jwtUtilService.generateToken(eq(expectedUser))).thenReturn(CORRECT_JWT_TOKEN);
 
         LoginResponseBody actualLoginResponseBody = authenticationService.login(USERNAME, PASSWORD_CORRECT);
         LoginResponseBody.MealtrackerUserToReturn actualUser = actualLoginResponseBody.getUser();
+        Claims actualClaims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(actualUser.getToken()).getBody();
 
         verify(repository, times(1)).getUserWithUsername(USERNAME);
+        verify(jwtUtilService, times(1)).generateToken(expectedUser);
 
         assertEquals(expectedUser.getFullName(), actualUser.getFullName());
         assertEquals(expectedUser.getUsername(), actualUser.getUsername());
+
+        assertEquals(expectedUser.getUsername(), actualClaims.get(KEY_USERNAME));
+        assertEquals((int) expectedUser.getId(), actualClaims.get(KEY_USER_ID));
+        assertEquals(expectedUser.getRole().getNumValue(), actualClaims.get(KEY_ROLE));
 
     }
 

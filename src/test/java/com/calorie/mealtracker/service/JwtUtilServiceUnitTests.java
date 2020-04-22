@@ -31,15 +31,15 @@ public class JwtUtilServiceUnitTests {
     @Test
     public void whenGenerateFunctionIsCalled_hashMapShouldBeReturned() {
 
-        MealtrackerUser user = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
+        MealtrackerUser expectedUser = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
 
-        String jwtToken = jwtUtilService.generateToken(user);
+        String jwtToken = jwtUtilService.generateToken(expectedUser);
 
-        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwtToken).getBody();
+        Claims actualClaims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwtToken).getBody();
 
-        Assertions.assertEquals(claims.get(KEY_USERNAME), user.getUsername());
-        Assertions.assertEquals((long) claims.get(KEY_USER_ID), user.getId());
-        Assertions.assertEquals(claims.get(KEY_ROLE), user.getRole());
+        Assertions.assertEquals(expectedUser.getUsername(), actualClaims.get(KEY_USERNAME));
+        Assertions.assertEquals((int) expectedUser.getId(), actualClaims.get(KEY_USER_ID));
+        Assertions.assertEquals(expectedUser.getRole().getNumValue(), actualClaims.get(KEY_ROLE));
 
     }
 

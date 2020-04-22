@@ -57,7 +57,20 @@ public class MealtrackerUser {
     }
 
     public enum Role {
-        ADMIN, USER
+
+        ADMIN(1000),
+        USER(1);
+
+        private int numValue;
+
+        Role(int numValue) {
+            this.numValue = numValue;
+        }
+
+        public int getNumValue() {
+            return numValue;
+        }
+
     }
 
 

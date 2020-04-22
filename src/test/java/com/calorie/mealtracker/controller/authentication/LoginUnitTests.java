@@ -165,8 +165,12 @@ public class LoginUnitTests {
 
         LoginRequestBody requestBody = new LoginRequestBody(USERNAME, PASSWORD_CORRECT);
         MealtrackerUser user = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
+        String token = new JwtUtilService().generateToken(user);
 
-        when(authenticationService.login(requestBody.getUsername(), requestBody.getPassword())).thenReturn(new LoginResponseBody(user));
+        LoginResponseBody loginResponseBody = new LoginResponseBody(user);
+        loginResponseBody.setToken(token);
+
+        when(authenticationService.login(requestBody.getUsername(), requestBody.getPassword())).thenReturn(loginResponseBody);
 
         mockMvc.perform(
                 post(ENDPOINT)
@@ -177,12 +181,11 @@ public class LoginUnitTests {
                 .andExpect(status().is(HttpStatus.OK.value()))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value(LoginResponseBody.MESSAGE))
-//                .andExpect(jsonPath("$.user.token").value(isNotNull()))
+                .andExpect(jsonPath("$.user.token").value(token))
                 .andExpect(jsonPath("$.user.fullName").value(user.getFullName()))
                 .andExpect(jsonPath("$.user.username").value(user.getUsername()));
 
         verify(authenticationService, times(1)).login(requestBody.getUsername(), requestBody.getPassword());
-
 
     }
 

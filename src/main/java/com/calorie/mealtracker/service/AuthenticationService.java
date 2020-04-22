@@ -38,6 +38,10 @@ public class AuthenticationService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
+    public void setJwtUtilService(JwtUtilService jwtUtilService) {
+        this.jwtUtilService = jwtUtilService;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         MealtrackerUser mealtrackerUser = null;
