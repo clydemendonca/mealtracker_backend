@@ -1,12 +1,14 @@
 package com.calorie.mealtracker.service;
 
 import com.calorie.mealtracker.error.IncorrectPasswordException;
+import com.calorie.mealtracker.error.UsernameAlreadyExistsException;
 import com.calorie.mealtracker.error.UsernameDoesNotExistException;
 import com.calorie.mealtracker.model.MealtrackerUser;
+import com.calorie.mealtracker.model.request.SignUpRequestBody;
 import com.calorie.mealtracker.model.response.LoginResponseBody;
+import com.calorie.mealtracker.model.response.StandardResponseBody;
 import com.calorie.mealtracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -34,6 +36,17 @@ public class AuthenticationService implements UserDetailsService {
         return loginResponseBody;
     }
 
+
+    public StandardResponseBody signUp(SignUpRequestBody signUpRequestBody) throws UsernameAlreadyExistsException {
+        try {
+            userRepository.getUserWithUsername(signUpRequestBody.getUsername());
+            throw new UsernameAlreadyExistsException();
+        } catch (UsernameDoesNotExistException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -56,4 +69,6 @@ public class AuthenticationService implements UserDetailsService {
         }
 
     }
+
+
 }

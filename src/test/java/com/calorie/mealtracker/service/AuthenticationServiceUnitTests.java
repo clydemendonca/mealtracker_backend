@@ -1,8 +1,10 @@
 package com.calorie.mealtracker.service;
 
 import com.calorie.mealtracker.error.IncorrectPasswordException;
+import com.calorie.mealtracker.error.UsernameAlreadyExistsException;
 import com.calorie.mealtracker.error.UsernameDoesNotExistException;
 import com.calorie.mealtracker.model.MealtrackerUser;
+import com.calorie.mealtracker.model.request.SignUpRequestBody;
 import com.calorie.mealtracker.model.response.LoginResponseBody;
 import com.calorie.mealtracker.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -87,6 +89,20 @@ public class AuthenticationServiceUnitTests {
         assertEquals(expectedUser.getUsername(), actualClaims.get(KEY_USERNAME));
         assertEquals((int) expectedUser.getId(), actualClaims.get(KEY_USER_ID));
         assertEquals(expectedUser.getRole().getNumValue(), actualClaims.get(KEY_ROLE));
+
+    }
+
+    @Test(expected = UsernameAlreadyExistsException.class)
+    public void whenUsernameAlreadyExists_errorShouldSaySo() throws UsernameDoesNotExistException, UsernameAlreadyExistsException {
+
+        SignUpRequestBody signUpRequestBody = new SignUpRequestBody(USERNAME, "anything", "anything");
+        MealtrackerUser expectedUser = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
+
+        when(repository.getUserWithUsername(USERNAME)).thenReturn(expectedUser);
+
+        authenticationService.signUp(signUpRequestBody);
+
+        verify(repository, times(1)).getUserWithUsername(USERNAME);
 
     }
 

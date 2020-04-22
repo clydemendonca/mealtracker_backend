@@ -1,10 +1,8 @@
 package com.calorie.mealtracker.controller;
 
-import com.calorie.mealtracker.error.IncorrectPasswordException;
-import com.calorie.mealtracker.error.PasswordNotProvidedException;
-import com.calorie.mealtracker.error.UsernameDoesNotExistException;
-import com.calorie.mealtracker.error.UsernameNotProvidedException;
+import com.calorie.mealtracker.error.*;
 import com.calorie.mealtracker.model.request.LoginRequestBody;
+import com.calorie.mealtracker.model.request.SignUpRequestBody;
 import com.calorie.mealtracker.model.response.LoginResponseBody;
 import com.calorie.mealtracker.model.response.StandardErrorResponseBody;
 import com.calorie.mealtracker.model.response.StandardResponseBody;
@@ -41,6 +39,23 @@ public class AuthenticationController {
             return new ResponseEntity<StandardResponseBody>(new StandardErrorResponseBody(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (UsernameDoesNotExistException e) {
             return new ResponseEntity<StandardResponseBody>(new StandardErrorResponseBody(e.getMessage()), HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    @PostMapping("/sign-up")
+    public ResponseEntity signUp(@RequestBody SignUpRequestBody signUpRequestBody) {
+
+        try {
+
+            if (signUpRequestBody.isUsernameEmpty()) throw new UsernameNotProvidedException();
+
+            StandardResponseBody standardResponseBody = authenticationService.signUp(signUpRequestBody);
+
+            return ResponseEntity.ok(standardResponseBody);
+
+        } catch (UsernameNotProvidedException | UsernameAlreadyExistsException e) {
+            return new ResponseEntity<StandardResponseBody>(new StandardErrorResponseBody(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
 
     }
