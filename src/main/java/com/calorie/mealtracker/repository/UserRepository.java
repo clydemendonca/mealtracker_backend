@@ -11,4 +11,7 @@ public class UserRepository {
         return new MealtrackerUser(0, "", "", "", null);
     }
 
+    public MealtrackerUser createUser(String username, String password, String fullName) {
+        return new MealtrackerUser(0, username, password, fullName, MealtrackerUser.Role.ADMIN);
+    }
 }

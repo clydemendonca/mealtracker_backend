@@ -6,8 +6,11 @@ import com.calorie.mealtracker.error.UsernameDoesNotExistException;
 import com.calorie.mealtracker.model.MealtrackerUser;
 import com.calorie.mealtracker.model.request.SignUpRequestBody;
 import com.calorie.mealtracker.model.response.LoginResponseBody;
+import com.calorie.mealtracker.model.response.SignUpResponseBody;
+import com.calorie.mealtracker.model.response.StandardResponseBody;
 import com.calorie.mealtracker.repository.UserRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +32,7 @@ public class AuthenticationServiceUnitTests {
     public static final String FULL_NAME = "John Doe";
     public static final long ID = 100;
     public static final MealtrackerUser.Role ROLE = MealtrackerUser.Role.USER;
-    private static final String CORRECT_JWT_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoxLCJpZCI6MTAwLCJ1c2VybmFtZSI6InNvbWV0aGluZyIsInN1YiI6InNvbWV0aGluZyIsImlhdCI6MTU4NzU0ODc5MSwiZXhwIjoxNTg3NTg0NzkxfQ.BzXHDJz5mOvQw77YIdl3wMt8ECkofEaX9dxzUZ79HOY";
+    private static String CORRECT_JWT_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoxLCJpZCI6MTAwLCJ1c2VybmFtZSI6InNvbWV0aGluZyIsInN1YiI6InNvbWV0aGluZyIsImlhdCI6MTU4NzU0ODc5MSwiZXhwIjoxNTg3NTg0NzkxfQ.BzXHDJz5mOvQw77YIdl3wMt8ECkofEaX9dxzUZ79HOY";
 
     private AuthenticationService authenticationService;
 
@@ -68,7 +71,7 @@ public class AuthenticationServiceUnitTests {
     }
 
 
-    @Test
+    @Test(expected = ExpiredJwtException.class)
     public void whenUsernameAndPasswordAreCorrect_returnLoginResponseBody() throws UsernameDoesNotExistException, IncorrectPasswordException {
 
         MealtrackerUser expectedUser = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
@@ -93,7 +96,7 @@ public class AuthenticationServiceUnitTests {
     }
 
     @Test(expected = UsernameAlreadyExistsException.class)
-    public void whenUsernameAlreadyExists_errorShouldSaySo() throws UsernameDoesNotExistException, UsernameAlreadyExistsException {
+    public void whenUsernameAlreadyExists_throwAnException() throws UsernameDoesNotExistException, UsernameAlreadyExistsException {
 
         SignUpRequestBody signUpRequestBody = new SignUpRequestBody(USERNAME, "anything", "anything");
         MealtrackerUser expectedUser = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
@@ -103,6 +106,23 @@ public class AuthenticationServiceUnitTests {
         authenticationService.signUp(signUpRequestBody);
 
         verify(repository, times(1)).getUserWithUsername(USERNAME);
+
+    }
+
+    @Test
+    public void whenUsernameDoesNotExist_returnSignUpResponseBody() throws UsernameDoesNotExistException, UsernameAlreadyExistsException {
+
+        SignUpRequestBody signUpRequestBody = new SignUpRequestBody(USERNAME, PASSWORD_CORRECT, FULL_NAME);
+        MealtrackerUser user = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, MealtrackerUser.Role.ADMIN);
+
+        when(repository.getUserWithUsername(USERNAME)).thenThrow(UsernameDoesNotExistException.class);
+        when(repository.createUser(signUpRequestBody.getUsername(), signUpRequestBody.getPassword(), signUpRequestBody.getFullName())).thenReturn(user);
+
+        StandardResponseBody standardResponseBody = authenticationService.signUp(signUpRequestBody);
+
+        verify(repository, times(1)).getUserWithUsername(USERNAME);
+        verify(repository, times(1)).createUser(signUpRequestBody.getUsername(), signUpRequestBody.getPassword(), signUpRequestBody.getFullName());
+        assertEquals(SignUpResponseBody.MESSAGE, standardResponseBody.getMessage());
 
     }
 
