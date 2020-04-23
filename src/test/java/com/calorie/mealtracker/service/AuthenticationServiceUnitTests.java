@@ -12,12 +12,17 @@ import com.calorie.mealtracker.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.calorie.mealtracker.service.JwtUtilService.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,32 +54,42 @@ public class AuthenticationServiceUnitTests {
         authenticationService.setJwtUtilService(jwtUtilService);
     }
 
-    @Test(expected = UsernameDoesNotExistException.class)
+    @Test
     public void whenUsernameIsIncorrect_throwAnException() throws UsernameDoesNotExistException, IncorrectPasswordException {
 
         when(repository.getUserWithUsername(USERNAME)).thenThrow(UsernameDoesNotExistException.class);
-        authenticationService.login(USERNAME, "");
+        try {
+            authenticationService.login(USERNAME, "");
+        } catch (UsernameDoesNotExistException e) {
+
+        }
+
         verify(repository, times(1)).getUserWithUsername(USERNAME);
 
     }
 
-    @Test(expected = IncorrectPasswordException.class)
+    @Test
     public void whenUsernameCorrectAndPasswordIsIncorrect_throwAnException() throws UsernameDoesNotExistException, IncorrectPasswordException {
 
         MealtrackerUser user = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
         when(repository.getUserWithUsername(USERNAME)).thenReturn(user);
 
-        authenticationService.login(USERNAME, PASSWORD_INCORRECT);
+        try {
+            authenticationService.login(USERNAME, PASSWORD_INCORRECT);
+        } catch (IncorrectPasswordException e) {
+
+        }
 
         verify(repository, times(1)).getUserWithUsername(USERNAME);
 
     }
 
 
-    @Test(expected = ExpiredJwtException.class)
+    @Test
     public void whenUsernameAndPasswordAreCorrect_returnLoginResponseBody() throws UsernameDoesNotExistException, IncorrectPasswordException {
 
         MealtrackerUser expectedUser = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
+        CORRECT_JWT_TOKEN = createJwtForTest(expectedUser);
 
         when(repository.getUserWithUsername(USERNAME)).thenReturn(expectedUser);
         when(jwtUtilService.generateToken(eq(expectedUser))).thenReturn(CORRECT_JWT_TOKEN);
@@ -95,7 +110,20 @@ public class AuthenticationServiceUnitTests {
 
     }
 
-    @Test(expected = UsernameAlreadyExistsException.class)
+    private String createJwtForTest(MealtrackerUser mealtrackerUser) {
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(KEY_USERNAME, mealtrackerUser.getUsername());
+        claims.put(KEY_ROLE, mealtrackerUser.getRole().getNumValue());
+        claims.put(KEY_USER_ID, mealtrackerUser.getId());
+
+        return Jwts.builder().setClaims(claims).setSubject(mealtrackerUser.getUsername()).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+
+    }
+
+    @Test
     public void whenUsernameAlreadyExists_throwAnException() throws UsernameDoesNotExistException, UsernameAlreadyExistsException {
 
         SignUpRequestBody signUpRequestBody = new SignUpRequestBody(USERNAME, "anything", "anything");
@@ -103,7 +131,11 @@ public class AuthenticationServiceUnitTests {
 
         when(repository.getUserWithUsername(USERNAME)).thenReturn(expectedUser);
 
-        authenticationService.signUp(signUpRequestBody);
+        try {
+            authenticationService.signUp(signUpRequestBody);
+        } catch (UsernameAlreadyExistsException e) {
+
+        }
 
         verify(repository, times(1)).getUserWithUsername(USERNAME);
 
