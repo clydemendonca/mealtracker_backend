@@ -8,7 +8,7 @@ import com.calorie.mealtracker.model.request.SignUpRequestBody;
 import com.calorie.mealtracker.model.response.LoginResponseBody;
 import com.calorie.mealtracker.model.response.SignUpResponseBody;
 import com.calorie.mealtracker.model.response.StandardResponseBody;
-import com.calorie.mealtracker.repository.MealtrackerUserRepository;
+import com.calorie.mealtracker.repository.MealtrackerUserJpaRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -40,7 +40,7 @@ public class AuthenticationServiceUnitTests {
     private AuthenticationService authenticationService;
 
     @Mock
-    private MealtrackerUserRepository repository;
+    private MealtrackerUserJpaRepository repository;
 
     @Mock
     private JwtUtilService jwtUtilService;
@@ -55,14 +55,14 @@ public class AuthenticationServiceUnitTests {
     @Test
     public void whenUsernameIsIncorrect_throwAnException() throws UsernameDoesNotExistException, IncorrectPasswordException {
 
-        when(repository.getUserWithUsername(USERNAME)).thenThrow(UsernameDoesNotExistException.class);
+        when(repository.findByUsername(USERNAME)).thenThrow(UsernameDoesNotExistException.class);
         try {
             authenticationService.login(USERNAME, "");
         } catch (UsernameDoesNotExistException e) {
 
         }
 
-        verify(repository, times(1)).getUserWithUsername(USERNAME);
+        verify(repository, times(1)).findByUsername(USERNAME);
 
     }
 
@@ -70,7 +70,7 @@ public class AuthenticationServiceUnitTests {
     public void whenUsernameCorrectAndPasswordIsIncorrect_throwAnException() throws UsernameDoesNotExistException, IncorrectPasswordException {
 
         MealtrackerUser user = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
-        when(repository.getUserWithUsername(USERNAME)).thenReturn(user);
+        when(repository.findByUsername(USERNAME)).thenReturn(user);
 
         try {
             authenticationService.login(USERNAME, PASSWORD_INCORRECT);
@@ -78,7 +78,7 @@ public class AuthenticationServiceUnitTests {
 
         }
 
-        verify(repository, times(1)).getUserWithUsername(USERNAME);
+        verify(repository, times(1)).findByUsername(USERNAME);
 
     }
 
@@ -89,14 +89,14 @@ public class AuthenticationServiceUnitTests {
         MealtrackerUser expectedUser = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
         CORRECT_JWT_TOKEN = createJwtForTest(expectedUser);
 
-        when(repository.getUserWithUsername(USERNAME)).thenReturn(expectedUser);
+        when(repository.findByUsername(USERNAME)).thenReturn(expectedUser);
         when(jwtUtilService.generateToken(eq(expectedUser))).thenReturn(CORRECT_JWT_TOKEN);
 
         LoginResponseBody actualLoginResponseBody = authenticationService.login(USERNAME, PASSWORD_CORRECT);
         LoginResponseBody.MealtrackerUserToReturn actualUser = actualLoginResponseBody.getUser();
         Claims actualClaims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(actualUser.getToken()).getBody();
 
-        verify(repository, times(1)).getUserWithUsername(USERNAME);
+        verify(repository, times(1)).findByUsername(USERNAME);
         verify(jwtUtilService, times(1)).generateToken(expectedUser);
 
         assertEquals(expectedUser.getFullName(), actualUser.getFullName());
@@ -127,7 +127,7 @@ public class AuthenticationServiceUnitTests {
         SignUpRequestBody signUpRequestBody = new SignUpRequestBody(USERNAME, "anything", "anything");
         MealtrackerUser expectedUser = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, ROLE);
 
-        when(repository.getUserWithUsername(USERNAME)).thenReturn(expectedUser);
+        when(repository.findByUsername(USERNAME)).thenReturn(expectedUser);
 
         try {
             authenticationService.signUp(signUpRequestBody);
@@ -135,7 +135,7 @@ public class AuthenticationServiceUnitTests {
 
         }
 
-        verify(repository, times(1)).getUserWithUsername(USERNAME);
+        verify(repository, times(1)).findByUsername(USERNAME);
 
     }
 
@@ -145,13 +145,15 @@ public class AuthenticationServiceUnitTests {
         SignUpRequestBody signUpRequestBody = new SignUpRequestBody(USERNAME, PASSWORD_CORRECT, FULL_NAME);
         MealtrackerUser user = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, MealtrackerUser.Role.ADMIN);
 
-        when(repository.getUserWithUsername(USERNAME)).thenThrow(UsernameDoesNotExistException.class);
-        when(repository.createUser(signUpRequestBody.getUsername(), signUpRequestBody.getPassword(), signUpRequestBody.getFullName())).thenReturn(user);
+        when(repository.findByUsername(USERNAME)).thenThrow(UsernameDoesNotExistException.class);
+
+        MealtrackerUser newUser = new MealtrackerUser(signUpRequestBody.getUsername(), signUpRequestBody.getPassword(), signUpRequestBody.getFullName(), MealtrackerUser.Role.ADMIN);
+        when(repository.save(eq(newUser))).thenReturn(user);
 
         StandardResponseBody standardResponseBody = authenticationService.signUp(signUpRequestBody);
 
-        verify(repository, times(1)).getUserWithUsername(USERNAME);
-        verify(repository, times(1)).createUser(signUpRequestBody.getUsername(), signUpRequestBody.getPassword(), signUpRequestBody.getFullName());
+        verify(repository, times(1)).findByUsername(USERNAME);
+        verify(repository, times(1)).save(eq(newUser));
         assertEquals(SignUpResponseBody.MESSAGE, standardResponseBody.getMessage());
 
     }

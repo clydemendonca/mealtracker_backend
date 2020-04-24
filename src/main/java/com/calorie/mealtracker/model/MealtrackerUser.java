@@ -1,12 +1,28 @@
 package com.calorie.mealtracker.model;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.MongoId;
+
+@Document
 public class MealtrackerUser {
 
+    @MongoId
     private long id;
+
     private String username;
     private String encryptedPassword;
     private String fullName;
     private Role role;
+
+    public MealtrackerUser() {
+    }
+
+    public MealtrackerUser(String username, String encryptedPassword, String fullName, Role role) {
+        this.username = username;
+        this.encryptedPassword = encryptedPassword;
+        this.fullName = fullName;
+        this.role = role;
+    }
 
     public MealtrackerUser(long id, String username, String encryptedPassword, String fullName, Role role) {
         this.id = id;
