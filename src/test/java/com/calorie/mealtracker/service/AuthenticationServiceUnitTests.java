@@ -8,16 +8,14 @@ import com.calorie.mealtracker.model.request.SignUpRequestBody;
 import com.calorie.mealtracker.model.response.LoginResponseBody;
 import com.calorie.mealtracker.model.response.SignUpResponseBody;
 import com.calorie.mealtracker.model.response.StandardResponseBody;
-import com.calorie.mealtracker.repository.UserRepository;
+import com.calorie.mealtracker.repository.MealtrackerUserRepository;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Date;
@@ -42,7 +40,7 @@ public class AuthenticationServiceUnitTests {
     private AuthenticationService authenticationService;
 
     @Mock
-    private UserRepository repository;
+    private MealtrackerUserRepository repository;
 
     @Mock
     private JwtUtilService jwtUtilService;
@@ -50,7 +48,7 @@ public class AuthenticationServiceUnitTests {
     @Before
     public void setup() {
         authenticationService = new AuthenticationService();
-        authenticationService.setUserRepository(repository);
+        authenticationService.setMealtrackerUserRepository(repository);
         authenticationService.setJwtUtilService(jwtUtilService);
     }
 

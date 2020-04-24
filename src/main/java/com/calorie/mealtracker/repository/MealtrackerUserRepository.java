@@ -5,7 +5,7 @@ import com.calorie.mealtracker.model.MealtrackerUser;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UserRepository {
+public class MealtrackerUserRepository {
 
     public MealtrackerUser getUserWithUsername(String username) throws UsernameDoesNotExistException {
         return new MealtrackerUser(0, "", "", "", null);

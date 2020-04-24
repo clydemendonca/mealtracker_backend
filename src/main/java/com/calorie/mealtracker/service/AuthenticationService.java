@@ -8,7 +8,7 @@ import com.calorie.mealtracker.model.request.SignUpRequestBody;
 import com.calorie.mealtracker.model.response.LoginResponseBody;
 import com.calorie.mealtracker.model.response.SignUpResponseBody;
 import com.calorie.mealtracker.model.response.StandardResponseBody;
-import com.calorie.mealtracker.repository.UserRepository;
+import com.calorie.mealtracker.repository.MealtrackerUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,13 +22,13 @@ import java.util.ArrayList;
 public class AuthenticationService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private MealtrackerUserRepository mealtrackerUserRepository;
 
     @Autowired
     private JwtUtilService jwtUtilService;
 
     public LoginResponseBody login(String username, String password) throws UsernameDoesNotExistException, IncorrectPasswordException {
-        MealtrackerUser user = userRepository.getUserWithUsername(username);
+        MealtrackerUser user = mealtrackerUserRepository.getUserWithUsername(username);
         if (!password.equals(user.getEncryptedPassword())) {
             throw new IncorrectPasswordException();
         }
@@ -40,16 +40,16 @@ public class AuthenticationService implements UserDetailsService {
 
     public StandardResponseBody signUp(SignUpRequestBody signUpRequestBody) throws UsernameAlreadyExistsException {
         try {
-            userRepository.getUserWithUsername(signUpRequestBody.getUsername());
+            mealtrackerUserRepository.getUserWithUsername(signUpRequestBody.getUsername());
             throw new UsernameAlreadyExistsException();
         } catch (UsernameDoesNotExistException e) {
-            userRepository.createUser(signUpRequestBody.getUsername(), signUpRequestBody.getPassword(), signUpRequestBody.getFullName());
+            mealtrackerUserRepository.createUser(signUpRequestBody.getUsername(), signUpRequestBody.getPassword(), signUpRequestBody.getFullName());
             return new SignUpResponseBody();
         }
     }
 
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public void setMealtrackerUserRepository(MealtrackerUserRepository mealtrackerUserRepository) {
+        this.mealtrackerUserRepository = mealtrackerUserRepository;
     }
 
     public void setJwtUtilService(JwtUtilService jwtUtilService) {
@@ -61,7 +61,7 @@ public class AuthenticationService implements UserDetailsService {
         MealtrackerUser mealtrackerUser = null;
         try {
 
-            mealtrackerUser = userRepository.getUserWithUsername(username);
+            mealtrackerUser = mealtrackerUserRepository.getUserWithUsername(username);
             return new User(mealtrackerUser.getUsername(), mealtrackerUser.getEncryptedPassword(), new ArrayList<>());
 
         } catch (UsernameDoesNotExistException e) {
