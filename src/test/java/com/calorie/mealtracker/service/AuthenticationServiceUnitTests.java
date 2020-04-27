@@ -55,7 +55,8 @@ public class AuthenticationServiceUnitTests {
     @Test
     public void whenUsernameIsIncorrect_throwAnException() throws UsernameDoesNotExistException, IncorrectPasswordException {
 
-        when(repository.findByUsername(USERNAME)).thenThrow(UsernameDoesNotExistException.class);
+        when(repository.findByUsername(USERNAME)).thenReturn(null);
+
         try {
             authenticationService.login(USERNAME, "");
         } catch (UsernameDoesNotExistException e) {
@@ -145,15 +146,14 @@ public class AuthenticationServiceUnitTests {
         SignUpRequestBody signUpRequestBody = new SignUpRequestBody(USERNAME, PASSWORD_CORRECT, FULL_NAME);
         MealtrackerUser user = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, MealtrackerUser.Role.ADMIN);
 
-        when(repository.findByUsername(USERNAME)).thenThrow(UsernameDoesNotExistException.class);
+        when(repository.findByUsername(USERNAME)).thenReturn(null);
 
-        MealtrackerUser newUser = new MealtrackerUser(signUpRequestBody.getUsername(), signUpRequestBody.getPassword(), signUpRequestBody.getFullName(), MealtrackerUser.Role.ADMIN);
-        when(repository.save(eq(newUser))).thenReturn(user);
+        when(repository.save(user)).thenReturn(user);
 
         StandardResponseBody standardResponseBody = authenticationService.signUp(signUpRequestBody);
 
         verify(repository, times(1)).findByUsername(USERNAME);
-        verify(repository, times(1)).save(eq(newUser));
+        verify(repository, times(1)).save(eq(user));
         assertEquals(SignUpResponseBody.MESSAGE, standardResponseBody.getMessage());
 
     }
