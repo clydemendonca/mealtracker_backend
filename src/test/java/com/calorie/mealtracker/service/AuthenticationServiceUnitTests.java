@@ -15,6 +15,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -147,14 +149,30 @@ public class AuthenticationServiceUnitTests {
         MealtrackerUser user = new MealtrackerUser(ID, USERNAME, PASSWORD_CORRECT, FULL_NAME, MealtrackerUser.Role.ADMIN);
 
         when(repository.findByUsername(USERNAME)).thenReturn(null);
-
-        when(repository.save(user)).thenReturn(user);
+//        when(repository.save(eq(user))).thenReturn(user);
 
         StandardResponseBody standardResponseBody = authenticationService.signUp(signUpRequestBody);
 
         verify(repository, times(1)).findByUsername(USERNAME);
-        verify(repository, times(1)).save(eq(user));
+        verify(repository, times(1)).save(argThat(new MealtrackerUserArgumentMatchers(user)));
         assertEquals(SignUpResponseBody.MESSAGE, standardResponseBody.getMessage());
+
+    }
+
+    class MealtrackerUserArgumentMatchers implements ArgumentMatcher<MealtrackerUser> {
+
+        private MealtrackerUser mealtrackerUser;
+
+        public MealtrackerUserArgumentMatchers(MealtrackerUser mealtrackerUser) {
+            this.mealtrackerUser = mealtrackerUser;
+        }
+
+        @Override
+        public boolean matches(MealtrackerUser argument) {
+            return mealtrackerUser.getUsername() == argument.getUsername() &&
+                    mealtrackerUser.getEncryptedPassword() == argument.getEncryptedPassword() &&
+                    mealtrackerUser.getRole().getNumValue() == argument.getRole().getNumValue();
+        }
 
     }
 
