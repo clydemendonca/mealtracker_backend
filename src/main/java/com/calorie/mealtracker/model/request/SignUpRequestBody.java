@@ -37,6 +37,14 @@ public class SignUpRequestBody {
     }
 
     public boolean isUsernameEmpty() {
-        return username.isEmpty() || username == null;
+        return username == null || username.isEmpty();
+    }
+
+    public boolean isPasswordEmpty() {
+        return password == null || password.isEmpty();
+    }
+
+    public boolean isFullNameEmpty() {
+        return fullName == null || fullName.isEmpty();
     }
 }

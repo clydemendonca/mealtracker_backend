@@ -2,6 +2,8 @@ package com.calorie.mealtracker.controller.authentication;
 
 
 import com.calorie.mealtracker.controller.AuthenticationController;
+import com.calorie.mealtracker.error.FullNameNotProvidedException;
+import com.calorie.mealtracker.error.PasswordNotProvidedException;
 import com.calorie.mealtracker.error.UsernameAlreadyExistsException;
 import com.calorie.mealtracker.error.UsernameNotProvidedException;
 import com.calorie.mealtracker.model.MealtrackerUser;
@@ -51,6 +53,101 @@ public class SignUpUnitTests {
                 .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value(UsernameNotProvidedException.MESSAGE));
+
+        verify(authenticationService, times(0)).signUp(signUpRequestBody);
+
+    }
+
+    @Test
+    public void whenUsernameIsNull_errorShouldSaySo() throws Exception {
+
+        SignUpRequestBody signUpRequestBody = new SignUpRequestBody(null, PASSWORD_CORRECT, FULL_NAME);
+
+        mockMvc.perform(
+                post(ENDPOINT)
+                        .content(asJsonString(signUpRequestBody))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value(UsernameNotProvidedException.MESSAGE));
+
+        verify(authenticationService, times(0)).signUp(signUpRequestBody);
+
+    }
+
+    @Test
+    public void whenPasswordIsEmpty_errorShouldSaySo() throws Exception {
+
+        SignUpRequestBody signUpRequestBody = new SignUpRequestBody(USERNAME, "", FULL_NAME);
+
+        mockMvc.perform(
+                post(ENDPOINT)
+                        .content(asJsonString(signUpRequestBody))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value(PasswordNotProvidedException.MESSAGE));
+
+        verify(authenticationService, times(0)).signUp(signUpRequestBody);
+
+    }
+
+    @Test
+    public void whenPasswordIsNull_errorShouldSaySo() throws Exception {
+
+        SignUpRequestBody signUpRequestBody = new SignUpRequestBody(USERNAME, null, FULL_NAME);
+
+        mockMvc.perform(
+                post(ENDPOINT)
+                        .content(asJsonString(signUpRequestBody))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value(PasswordNotProvidedException.MESSAGE));
+
+        verify(authenticationService, times(0)).signUp(signUpRequestBody);
+
+    }
+
+    @Test
+    public void whenFullNameIsEmpty_errorShouldSaySo() throws Exception {
+
+        SignUpRequestBody signUpRequestBody = new SignUpRequestBody(USERNAME, PASSWORD_CORRECT, "");
+
+        mockMvc.perform(
+                post(ENDPOINT)
+                        .content(asJsonString(signUpRequestBody))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value(FullNameNotProvidedException.MESSAGE));
+
+        verify(authenticationService, times(0)).signUp(signUpRequestBody);
+
+    }
+
+    @Test
+    public void whenFullNameIsNull_errorShouldSaySo() throws Exception {
+
+        SignUpRequestBody signUpRequestBody = new SignUpRequestBody(USERNAME, PASSWORD_CORRECT, null);
+
+        mockMvc.perform(
+                post(ENDPOINT)
+                        .content(asJsonString(signUpRequestBody))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value(FullNameNotProvidedException.MESSAGE));
 
         verify(authenticationService, times(0)).signUp(signUpRequestBody);
 

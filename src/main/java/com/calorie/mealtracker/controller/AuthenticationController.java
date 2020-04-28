@@ -49,12 +49,14 @@ public class AuthenticationController {
         try {
 
             if (signUpRequestBody.isUsernameEmpty()) throw new UsernameNotProvidedException();
+            if (signUpRequestBody.isPasswordEmpty()) throw new PasswordNotProvidedException();
+            if (signUpRequestBody.isFullNameEmpty()) throw new FullNameNotProvidedException();
 
             StandardResponseBody standardResponseBody = authenticationService.signUp(signUpRequestBody);
 
             return ResponseEntity.ok(standardResponseBody);
 
-        } catch (UsernameNotProvidedException | UsernameAlreadyExistsException e) {
+        } catch (UsernameNotProvidedException | UsernameAlreadyExistsException | PasswordNotProvidedException | FullNameNotProvidedException e) {
             return new ResponseEntity<StandardResponseBody>(new StandardErrorResponseBody(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
 
