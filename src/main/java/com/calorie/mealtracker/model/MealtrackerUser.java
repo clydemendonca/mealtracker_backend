@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 public class MealtrackerUser {
 
     @MongoId
-    private long id;
+    private String id;
 
     private String username;
     private String encryptedPassword;
@@ -24,7 +24,7 @@ public class MealtrackerUser {
         this.role = role;
     }
 
-    public MealtrackerUser(long id, String username, String encryptedPassword, String fullName, Role role) {
+    public MealtrackerUser(String id, String username, String encryptedPassword, String fullName, Role role) {
         this.id = id;
         this.username = username;
         this.encryptedPassword = encryptedPassword;
@@ -32,11 +32,11 @@ public class MealtrackerUser {
         this.role = role;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -35,7 +35,7 @@ public class AuthenticationServiceUnitTests {
     public static final String PASSWORD_CORRECT = "something";
     public static final String PASSWORD_INCORRECT = "somethingElse";
     public static final String FULL_NAME = "John Doe";
-    public static final long ID = 100;
+    public static final String ID = "100";
     public static final MealtrackerUser.Role ROLE = MealtrackerUser.Role.USER;
     private static String CORRECT_JWT_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoxLCJpZCI6MTAwLCJ1c2VybmFtZSI6InNvbWV0aGluZyIsInN1YiI6InNvbWV0aGluZyIsImlhdCI6MTU4NzU0ODc5MSwiZXhwIjoxNTg3NTg0NzkxfQ.BzXHDJz5mOvQw77YIdl3wMt8ECkofEaX9dxzUZ79HOY";
 
@@ -106,7 +106,7 @@ public class AuthenticationServiceUnitTests {
         assertEquals(expectedUser.getUsername(), actualUser.getUsername());
 
         assertEquals(expectedUser.getUsername(), actualClaims.get(KEY_USERNAME));
-        assertEquals((int) expectedUser.getId(), actualClaims.get(KEY_USER_ID));
+        assertEquals(expectedUser.getId(), actualClaims.get(KEY_USER_ID));
         assertEquals(expectedUser.getRole().getNumValue(), actualClaims.get(KEY_ROLE));
 
     }

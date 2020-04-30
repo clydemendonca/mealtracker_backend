@@ -18,7 +18,7 @@ public class JwtUtilServiceUnitTests {
     public static final String PASSWORD_CORRECT = "something";
     public static final String PASSWORD_INCORRECT = "somethingElse";
     public static final String FULL_NAME = "John Doe";
-    private static final long ID = 100;
+    private static final String ID = "";
     private static final MealtrackerUser.Role ROLE = MealtrackerUser.Role.USER;
 
     private JwtUtilService jwtUtilService;
@@ -38,7 +38,7 @@ public class JwtUtilServiceUnitTests {
         Claims actualClaims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwtToken).getBody();
 
         Assertions.assertEquals(expectedUser.getUsername(), actualClaims.get(KEY_USERNAME));
-        Assertions.assertEquals((int) expectedUser.getId(), actualClaims.get(KEY_USER_ID));
+        Assertions.assertEquals(expectedUser.getId(), actualClaims.get(KEY_USER_ID));
         Assertions.assertEquals(expectedUser.getRole().getNumValue(), actualClaims.get(KEY_ROLE));
 
     }
