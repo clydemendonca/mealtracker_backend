@@ -107,7 +107,7 @@ public class AuthenticationServiceUnitTests {
 
         assertEquals(expectedUser.getUsername(), actualClaims.get(KEY_USERNAME));
         assertEquals(expectedUser.getId(), actualClaims.get(KEY_USER_ID));
-        assertEquals(expectedUser.getRole().getNumValue(), actualClaims.get(KEY_ROLE));
+        assertEquals(expectedUser.getRole().name(), actualClaims.get(KEY_ROLE));
 
     }
 
@@ -115,7 +115,7 @@ public class AuthenticationServiceUnitTests {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put(KEY_USERNAME, mealtrackerUser.getUsername());
-        claims.put(KEY_ROLE, mealtrackerUser.getRole().getNumValue());
+        claims.put(KEY_ROLE, mealtrackerUser.getRole().name());
         claims.put(KEY_USER_ID, mealtrackerUser.getId());
 
         return Jwts.builder().setClaims(claims).setSubject(mealtrackerUser.getUsername()).setIssuedAt(new Date(System.currentTimeMillis()))
@@ -170,8 +170,8 @@ public class AuthenticationServiceUnitTests {
         @Override
         public boolean matches(MealtrackerUser argument) {
             return mealtrackerUser.getUsername() == argument.getUsername() &&
-                    mealtrackerUser.getEncryptedPassword() == argument.getEncryptedPassword() &&
-                    mealtrackerUser.getRole().getNumValue() == argument.getRole().getNumValue();
+                    mealtrackerUser.getEncryptedPassword() == argument.getEncryptedPassword();
+
         }
 
     }

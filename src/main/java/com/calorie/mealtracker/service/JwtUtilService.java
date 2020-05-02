@@ -45,7 +45,7 @@ public class JwtUtilService {
     public String generateToken(MealtrackerUser mealtrackerUser) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(KEY_USERNAME, mealtrackerUser.getUsername());
-        claims.put(KEY_ROLE, mealtrackerUser.getRole().getNumValue());
+        claims.put(KEY_ROLE, mealtrackerUser.getRole().name());
         claims.put(KEY_USER_ID, mealtrackerUser.getId());
 
         return createToken(claims, mealtrackerUser.getUsername());

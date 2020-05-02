@@ -29,6 +29,7 @@ public class LoginResponseBody extends StandardResponseBody {
 
     public class MealtrackerUserToReturn {
 
+        private MealtrackerUser.Role role;
         private String username;
         private String fullName;
         private String token;
@@ -37,6 +38,15 @@ public class LoginResponseBody extends StandardResponseBody {
             this.username = user.getUsername();
             this.fullName = user.getFullName();
             this.token = token;
+            this.role = user.getRole();
+        }
+
+        public MealtrackerUser.Role getRole() {
+            return role;
+        }
+
+        public void setRole(MealtrackerUser.Role role) {
+            this.role = role;
         }
 
         public String getFullName() {

@@ -20,7 +20,7 @@ public class MealtrackerUserJpaRespositoryTests {
     @Test
     public void whenFindByName_thenReturnEmployee() {
         // given
-        MealtrackerUser givenUser = new MealtrackerUser("clyde", "clyde", "mytest", MealtrackerUser.Role.ADMIN);
+        MealtrackerUser givenUser = new MealtrackerUser("admin", "asd", "mytest", MealtrackerUser.Role.ADMIN);
 
         // when
         MealtrackerUser found = mealtrackerUserJpaRepository.findByUsername(givenUser.getUsername());

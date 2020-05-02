@@ -46,7 +46,7 @@ public class AuthenticationService implements UserDetailsService {
 
         if (user != null) throw new UsernameAlreadyExistsException();
 
-        MealtrackerUser newUser = new MealtrackerUser(signUpRequestBody.getUsername(), signUpRequestBody.getPassword(), signUpRequestBody.getFullName(), MealtrackerUser.Role.ADMIN);
+        MealtrackerUser newUser = new MealtrackerUser(signUpRequestBody.getUsername(), signUpRequestBody.getPassword(), signUpRequestBody.getFullName(), MealtrackerUser.Role.USER);
         mealtrackerUserRepository.save(newUser);
         return new SignUpResponseBody();
 

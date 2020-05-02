@@ -39,7 +39,7 @@ public class JwtUtilServiceUnitTests {
 
         Assertions.assertEquals(expectedUser.getUsername(), actualClaims.get(KEY_USERNAME));
         Assertions.assertEquals(expectedUser.getId(), actualClaims.get(KEY_USER_ID));
-        Assertions.assertEquals(expectedUser.getRole().getNumValue(), actualClaims.get(KEY_ROLE));
+        Assertions.assertEquals(expectedUser.getRole().name(), actualClaims.get(KEY_ROLE));
 
     }
 

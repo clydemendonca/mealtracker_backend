@@ -183,6 +183,7 @@ public class LoginUnitTests {
                 .andExpect(jsonPath("$.message").value(LoginResponseBody.MESSAGE))
                 .andExpect(jsonPath("$.user.token").value(token))
                 .andExpect(jsonPath("$.user.fullName").value(user.getFullName()))
+                .andExpect(jsonPath("$.user.role").value(user.getRole().toString()))
                 .andExpect(jsonPath("$.user.username").value(user.getUsername()));
 
         verify(authenticationService, times(1)).login(requestBody.getUsername(), requestBody.getPassword());
