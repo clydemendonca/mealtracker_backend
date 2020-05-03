@@ -3,9 +3,9 @@ package com.calorie.mealtracker.controller;
 import com.calorie.mealtracker.error.CaloriesNotProvidedException;
 import com.calorie.mealtracker.error.TimeInMillisecondsNotProvidedException;
 import com.calorie.mealtracker.error.MealNameNotProvidedException;
-import com.calorie.mealtracker.model.MealsForUserAggregation;
+import com.calorie.mealtracker.model.CaloriesForUserByDate;
 import com.calorie.mealtracker.model.request.CreateMealRequestBody;
-import com.calorie.mealtracker.model.request.GetMealsForUserRequestBody;
+import com.calorie.mealtracker.model.request.DaywiseCalorieIntakeResponseBody;
 import com.calorie.mealtracker.model.response.CreateMealResponseBody;
 import com.calorie.mealtracker.model.response.StandardErrorResponseBody;
 import com.calorie.mealtracker.service.MealService;
@@ -45,13 +45,13 @@ public class MealController {
     }
 
     @GetMapping
-    public ResponseEntity getMealsForUser(@RequestParam("from") long fromTimeInMilliseconds, @RequestParam("to") long toTimeInMilliseconds) {
+    public ResponseEntity getDaywiseCalorieIntakeForUser(@RequestParam("from") long fromTimeInMilliseconds, @RequestParam("to") long toTimeInMilliseconds) {
 
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        List<MealsForUserAggregation> mealsForUser = mealService.getMealsForUserAggregation(principal.getUsername(), fromTimeInMilliseconds, toTimeInMilliseconds);
+        List<CaloriesForUserByDate> calorieIntakeForUser = mealService.getDaywiseCalorieIntakeForUser(principal.getUsername(), fromTimeInMilliseconds, toTimeInMilliseconds);
 
-        return ResponseEntity.ok("Hi");
+        return ResponseEntity.ok(new DaywiseCalorieIntakeResponseBody(calorieIntakeForUser));
 
     }
 

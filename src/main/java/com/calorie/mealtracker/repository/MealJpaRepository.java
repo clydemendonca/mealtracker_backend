@@ -1,8 +1,7 @@
 package com.calorie.mealtracker.repository;
 
 import com.calorie.mealtracker.model.Meal;
-import com.calorie.mealtracker.model.MealsForUserAggregation;
-import org.bson.types.ObjectId;
+import com.calorie.mealtracker.model.CaloriesForUserByDate;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -21,6 +20,6 @@ public interface MealJpaRepository extends MongoRepository<Meal, String> {
             "  _id: {  $dateToString: { format: \"%Y-%m-%d\", date: \"$date\" } }," +
             "  total: { $sum: \"$calories\" }" +
             "}}"})
-    List<MealsForUserAggregation> getMealsForUserAggregation(String userId, Date fromDate, Date toDate);
+    List<CaloriesForUserByDate> getDaywiseCalorieIntakeForUser(String userId, Date fromDate, Date toDate);
 
 }

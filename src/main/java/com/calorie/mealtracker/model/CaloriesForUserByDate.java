@@ -5,13 +5,13 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
 
-public class MealsForUserAggregation {
+public class CaloriesForUserByDate {
 
     @Field("_id")
     private String dateString;
     private float total;
 
-    public MealsForUserAggregation(String dateString, float total) {
+    public CaloriesForUserByDate(String dateString, float total) {
         this.dateString = dateString;
         this.total = total;
     }
