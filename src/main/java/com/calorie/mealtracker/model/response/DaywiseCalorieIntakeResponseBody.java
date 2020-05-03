@@ -1,4 +1,4 @@
-package com.calorie.mealtracker.model.request;
+package com.calorie.mealtracker.model.response;
 
 import com.calorie.mealtracker.model.CaloriesForUserByDate;
 

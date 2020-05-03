@@ -6,7 +6,7 @@ import com.calorie.mealtracker.error.MealNameNotProvidedException;
 import com.calorie.mealtracker.model.CaloriesForUserByDate;
 import com.calorie.mealtracker.model.MealtrackerUser;
 import com.calorie.mealtracker.model.request.CreateMealRequestBody;
-import com.calorie.mealtracker.model.request.DaywiseCalorieIntakeResponseBody;
+import com.calorie.mealtracker.model.response.DaywiseCalorieIntakeResponseBody;
 import com.calorie.mealtracker.model.response.CreateMealResponseBody;
 import com.calorie.mealtracker.model.response.StandardErrorResponseBody;
 import com.calorie.mealtracker.service.MealService;
@@ -19,6 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
 @RequestMapping("/meals")

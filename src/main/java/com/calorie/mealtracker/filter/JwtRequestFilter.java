@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -20,8 +21,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Enumeration;
 
 @Component
+@CrossOrigin
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private static final String AUTHORIZATION = "Authorization";
@@ -38,6 +41,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String path = httpServletRequest.getRequestURI();
         if (path.startsWith("/auth/")) {
             filterChain.doFilter(httpServletRequest, httpServletResponse); // Just continue chain.
+        }
+
+
+        Enumeration<String> headerNames = httpServletRequest.getHeaderNames();
+
+        if (headerNames != null) {
+            while (headerNames.hasMoreElements()) {
+                String name = headerNames.nextElement();
+                System.out.println("Header: " + name + " value:" + httpServletRequest.getHeader(name));
+            }
         }
 
         String authorizationHeader = httpServletRequest.getHeader(AUTHORIZATION);
