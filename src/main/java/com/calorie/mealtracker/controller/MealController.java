@@ -3,6 +3,7 @@ package com.calorie.mealtracker.controller;
 import com.calorie.mealtracker.error.CaloriesNotProvidedException;
 import com.calorie.mealtracker.error.TimeInMillisecondsNotProvidedException;
 import com.calorie.mealtracker.error.MealNameNotProvidedException;
+import com.calorie.mealtracker.model.MealsForUserAggregation;
 import com.calorie.mealtracker.model.request.CreateMealRequestBody;
 import com.calorie.mealtracker.model.request.GetMealsForUserRequestBody;
 import com.calorie.mealtracker.model.response.CreateMealResponseBody;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/meals")
@@ -46,7 +49,7 @@ public class MealController {
 
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Object obj = mealService.getMealsForUserAggregation(principal.getUsername(), fromTimeInMilliseconds, toTimeInMilliseconds);
+        List<MealsForUserAggregation> mealsForUser = mealService.getMealsForUserAggregation(principal.getUsername(), fromTimeInMilliseconds, toTimeInMilliseconds);
 
         return ResponseEntity.ok("Hi");
 

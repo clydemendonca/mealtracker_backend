@@ -14,8 +14,8 @@ public interface MealJpaRepository extends MongoRepository<Meal, String> {
     @Aggregation({"{$match: {" +
             "  userId: ObjectId(\"?0\")," +
             "  $and: [{" +
-            "    date : { $lte: ?1 }," +
-            "    date : { $gte: ?2 }" +
+            "    date : { $gte: ?1 }," +
+            "    date : { $lte: ?2 }" +
             "  }]" +
             "}}", "{$group: {" +
             "  _id: {  $dateToString: { format: \"%Y-%m-%d\", date: \"$date\" } }," +

@@ -1,25 +1,26 @@
 package com.calorie.mealtracker.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
 
 public class MealsForUserAggregation {
 
-    @JsonProperty("_id")
-    private Date dateString;
+    @Field("_id")
+    private String dateString;
     private float total;
 
-    public MealsForUserAggregation(Date dateString, float total) {
+    public MealsForUserAggregation(String dateString, float total) {
         this.dateString = dateString;
         this.total = total;
     }
 
-    public Date getDateString() {
+    public String getDateString() {
         return dateString;
     }
 
-    public void setDateString(Date dateString) {
+    public void setDateString(String dateString) {
         this.dateString = dateString;
     }
 
