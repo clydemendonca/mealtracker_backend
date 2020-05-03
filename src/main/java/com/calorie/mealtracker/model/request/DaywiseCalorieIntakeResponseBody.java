@@ -7,9 +7,19 @@ import java.util.List;
 public class DaywiseCalorieIntakeResponseBody {
 
     private List<CaloriesForUserByDate> calorieIntakeForUser;
+    private float dailyCalorieIntake;
 
-    public DaywiseCalorieIntakeResponseBody(List<CaloriesForUserByDate> calorieIntakeForUser) {
+    public DaywiseCalorieIntakeResponseBody(float dailyCalorieIntake, List<CaloriesForUserByDate> calorieIntakeForUser) {
+        this.dailyCalorieIntake = dailyCalorieIntake;
         this.calorieIntakeForUser = calorieIntakeForUser;
+    }
+
+    public float getDailyCalorieIntake() {
+        return dailyCalorieIntake;
+    }
+
+    public void setDailyCalorieIntake(float dailyCalorieIntake) {
+        this.dailyCalorieIntake = dailyCalorieIntake;
     }
 
     public List<CaloriesForUserByDate> getCalorieIntakeForUser() {

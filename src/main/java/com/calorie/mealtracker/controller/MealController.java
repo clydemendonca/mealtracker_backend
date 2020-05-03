@@ -4,11 +4,13 @@ import com.calorie.mealtracker.error.CaloriesNotProvidedException;
 import com.calorie.mealtracker.error.TimeInMillisecondsNotProvidedException;
 import com.calorie.mealtracker.error.MealNameNotProvidedException;
 import com.calorie.mealtracker.model.CaloriesForUserByDate;
+import com.calorie.mealtracker.model.MealtrackerUser;
 import com.calorie.mealtracker.model.request.CreateMealRequestBody;
 import com.calorie.mealtracker.model.request.DaywiseCalorieIntakeResponseBody;
 import com.calorie.mealtracker.model.response.CreateMealResponseBody;
 import com.calorie.mealtracker.model.response.StandardErrorResponseBody;
 import com.calorie.mealtracker.service.MealService;
+import com.calorie.mealtracker.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,9 @@ public class MealController {
 
     @Autowired
     private MealService mealService;
+
+    @Autowired
+    private MyUserDetailsService myUserDetailsService;
 
     @PostMapping
     public ResponseEntity createMealForUser(@RequestBody CreateMealRequestBody requestBody) {
@@ -49,9 +54,10 @@ public class MealController {
 
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        MealtrackerUser user = myUserDetailsService.loadMealtrackerUserByUsername(principal.getUsername());
         List<CaloriesForUserByDate> calorieIntakeForUser = mealService.getDaywiseCalorieIntakeForUser(principal.getUsername(), fromTimeInMilliseconds, toTimeInMilliseconds);
 
-        return ResponseEntity.ok(new DaywiseCalorieIntakeResponseBody(calorieIntakeForUser));
+        return ResponseEntity.ok(new DaywiseCalorieIntakeResponseBody(user.getDailyCalorieIntake(),calorieIntakeForUser));
 
     }
 
