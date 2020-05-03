@@ -10,6 +10,7 @@ import com.calorie.mealtracker.model.response.SignUpResponseBody;
 import com.calorie.mealtracker.model.response.StandardResponseBody;
 import com.calorie.mealtracker.repository.MealtrackerUserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,9 +18,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Service
-public class AuthenticationService implements UserDetailsService {
+public class AuthenticationService {
 
     @Autowired
     private MealtrackerUserJpaRepository mealtrackerUserRepository;
@@ -59,15 +61,5 @@ public class AuthenticationService implements UserDetailsService {
     public void setJwtUtilService(JwtUtilService jwtUtilService) {
         this.jwtUtilService = jwtUtilService;
     }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        MealtrackerUser mealtrackerUser = null;
-
-        mealtrackerUser = mealtrackerUserRepository.findByUsername(username);
-        return new User(mealtrackerUser.getUsername(), mealtrackerUser.getEncryptedPassword(), new ArrayList<>());
-
-    }
-
 
 }
