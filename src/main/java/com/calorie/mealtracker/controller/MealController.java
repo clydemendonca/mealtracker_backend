@@ -91,4 +91,12 @@ public class MealController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity updateMealForUser(@PathVariable("id") String mealId) {
+
+            mealService.deleteMeal(mealId);
+            return ResponseEntity.ok(new DeleteMealResponseBody());
+
+    }
+
 }

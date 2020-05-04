@@ -61,4 +61,10 @@ public class MealService {
         mealJpaRepository.save(new Meal(mealId, user.getId(), date, updateMealrequestBody.getMealName(), updateMealrequestBody.getCalories()));
 
     }
+
+    public void deleteMeal(String mealId) {
+
+        mealJpaRepository.deleteById(mealId);
+
+    }
 }
