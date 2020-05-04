@@ -4,10 +4,12 @@ import com.calorie.mealtracker.error.CaloriesNotProvidedException;
 import com.calorie.mealtracker.error.TimeInMillisecondsNotProvidedException;
 import com.calorie.mealtracker.error.MealNameNotProvidedException;
 import com.calorie.mealtracker.model.CaloriesForUserByDate;
+import com.calorie.mealtracker.model.Meal;
 import com.calorie.mealtracker.model.MealtrackerUser;
 import com.calorie.mealtracker.model.request.CreateMealRequestBody;
 import com.calorie.mealtracker.model.response.DaywiseCalorieIntakeResponseBody;
 import com.calorie.mealtracker.model.response.CreateMealResponseBody;
+import com.calorie.mealtracker.model.response.GetMealsForUserResponseBody;
 import com.calorie.mealtracker.model.response.StandardErrorResponseBody;
 import com.calorie.mealtracker.service.MealService;
 import com.calorie.mealtracker.service.MyUserDetailsService;
@@ -18,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -51,7 +54,7 @@ public class MealController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/daywise")
     public ResponseEntity getDaywiseCalorieIntakeForUser(@RequestParam("from") long fromTimeInMilliseconds, @RequestParam("to") long toTimeInMilliseconds) {
 
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -61,6 +64,17 @@ public class MealController {
 
         return ResponseEntity.ok(new DaywiseCalorieIntakeResponseBody(user.getDailyCalorieIntake(),calorieIntakeForUser));
 
+    }
+
+    @GetMapping
+    public ResponseEntity getMealsForUser(@RequestParam("from") long fromTimeInMilliseconds, @RequestParam("to") long toTimeInMilliseconds) {
+
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        MealtrackerUser user = myUserDetailsService.loadMealtrackerUserByUsername(principal.getUsername());
+        ArrayList<Meal> meals = mealService.getMealsForUser(principal.getUsername(), fromTimeInMilliseconds, toTimeInMilliseconds);
+
+        return ResponseEntity.ok(new GetMealsForUserResponseBody(meals));
     }
 
 }

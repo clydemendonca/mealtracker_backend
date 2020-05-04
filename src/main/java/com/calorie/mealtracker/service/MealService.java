@@ -6,9 +6,11 @@ import com.calorie.mealtracker.model.MealtrackerUser;
 import com.calorie.mealtracker.model.request.CreateMealRequestBody;
 import com.calorie.mealtracker.repository.MealJpaRepository;
 import com.calorie.mealtracker.repository.MealtrackerUserJpaRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -39,5 +41,16 @@ public class MealService {
         List<CaloriesForUserByDate> mealsForUser = mealJpaRepository.getDaywiseCalorieIntakeForUser(user.getId(), fromDate, toDate);
 
         return mealsForUser;
+    }
+
+    public ArrayList<Meal> getMealsForUser(String username, long fromTimeInMilliseconds, long toTimeInMilliseconds) {
+
+        MealtrackerUser user = mealtrackerUserJpaRepository.findByUsername(username);
+        Date fromDate = new Date(fromTimeInMilliseconds);
+        Date toDate = new Date(toTimeInMilliseconds);
+
+        ArrayList<Meal> meals = mealJpaRepository.findByUserIdAndDateBetweenOrderByDateAsc(new ObjectId(user.getId()), fromDate, toDate);
+        return meals;
+
     }
 }

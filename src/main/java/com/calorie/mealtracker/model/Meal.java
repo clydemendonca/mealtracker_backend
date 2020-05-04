@@ -20,6 +20,9 @@ public class Meal {
     private String mealName;
     private float calories;
 
+    public Meal() {
+    }
+
     public Meal(String userId, Date date, String mealName, float calories) {
         this.userId = new ObjectId(userId);
         this.date = date;
