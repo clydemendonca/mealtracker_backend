@@ -12,7 +12,7 @@ import java.util.Date;
 public class Meal {
 
     @MongoId
-    private String id;
+    private ObjectId id;
 
     private ObjectId userId;
 
@@ -31,7 +31,7 @@ public class Meal {
     }
 
     public Meal(String id, String userId, Date date, String mealName, float calories) {
-        this.id = id;
+        this.id = new ObjectId(id);
         this.userId = new ObjectId(userId);
         this.date = date;
         this.mealName = mealName;
@@ -39,11 +39,11 @@ public class Meal {
     }
 
     public String getId() {
-        return id;
+        return id.toHexString();
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.id = new ObjectId(id);
     }
 
     public String getUserId() {

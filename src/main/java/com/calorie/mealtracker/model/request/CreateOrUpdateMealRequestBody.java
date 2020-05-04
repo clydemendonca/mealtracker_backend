@@ -2,13 +2,13 @@ package com.calorie.mealtracker.model.request;
 
 import java.util.Date;
 
-public class CreateMealRequestBody {
+public class CreateOrUpdateMealRequestBody {
 
     private long timeInMilliseconds;
     private String mealName;
     private float calories;
 
-    public CreateMealRequestBody(long timeInMilliseconds, String mealName, float calories) {
+    public CreateOrUpdateMealRequestBody(long timeInMilliseconds, String mealName, float calories) {
         this.timeInMilliseconds = timeInMilliseconds;
         this.mealName = mealName;
         this.calories = calories;

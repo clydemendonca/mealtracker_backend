@@ -3,7 +3,7 @@ package com.calorie.mealtracker.service;
 import com.calorie.mealtracker.model.Meal;
 import com.calorie.mealtracker.model.CaloriesForUserByDate;
 import com.calorie.mealtracker.model.MealtrackerUser;
-import com.calorie.mealtracker.model.request.CreateMealRequestBody;
+import com.calorie.mealtracker.model.request.CreateOrUpdateMealRequestBody;
 import com.calorie.mealtracker.repository.MealJpaRepository;
 import com.calorie.mealtracker.repository.MealtrackerUserJpaRepository;
 import org.bson.types.ObjectId;
@@ -23,12 +23,12 @@ public class MealService {
     @Autowired
     private MealtrackerUserJpaRepository mealtrackerUserJpaRepository;
 
-    public void createMealForUser(String username, CreateMealRequestBody createMealRequestBody) {
+    public void createMealForUser(String username, CreateOrUpdateMealRequestBody createOrUpdateMealRequestBody) {
 
         MealtrackerUser user = mealtrackerUserJpaRepository.findByUsername(username);
-        Date date = new Date(createMealRequestBody.getTimeInMilliseconds());
+        Date date = new Date(createOrUpdateMealRequestBody.getTimeInMilliseconds());
 
-        mealJpaRepository.save(new Meal(user.getId(), date, createMealRequestBody.getMealName(), createMealRequestBody.getCalories()));
+        mealJpaRepository.save(new Meal(user.getId(), date, createOrUpdateMealRequestBody.getMealName(), createOrUpdateMealRequestBody.getCalories()));
 
     }
 
@@ -51,6 +51,14 @@ public class MealService {
 
         ArrayList<Meal> meals = mealJpaRepository.findByUserIdAndDateBetweenOrderByDateAsc(new ObjectId(user.getId()), fromDate, toDate);
         return meals;
+
+    }
+
+    public void updateMealForUser(String username, String mealId, CreateOrUpdateMealRequestBody updateMealrequestBody) {
+        MealtrackerUser user = mealtrackerUserJpaRepository.findByUsername(username);
+        Date date = new Date(updateMealrequestBody.getTimeInMilliseconds());
+
+        mealJpaRepository.save(new Meal(mealId, user.getId(), date, updateMealrequestBody.getMealName(), updateMealrequestBody.getCalories()));
 
     }
 }
